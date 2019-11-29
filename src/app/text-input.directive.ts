@@ -1,21 +1,23 @@
-import {Directive, ElementRef, HostListener, Input} from '@angular/core';
+import {Directive, ElementRef, HostBinding, HostListener, Input} from '@angular/core';
 import {ControlledInput} from './controlled-input';
 
 @Directive({
-    selector: 'input [type="text"] [controlledBy]'
+    selector: 'input [type="text"] [efControl]'
 })
 export class TextInputDirective {
 
     private control: ControlledInput<string>;
     private isFocused = false;
-    private isConflict = false;
+
+    @HostBinding('class.ef-conflict')
+    isConflict = false;
 
     constructor(private element: ElementRef<HTMLInputElement>) {
         console.log('Text Input Directive', element);
     }
 
-    @Input('controlledBy')
-    set controlledBy(ctrl: ControlledInput<string>) {
+    @Input('efControl')
+    set efControl(ctrl: ControlledInput<string>) {
         if (this.isFocused) {
             if (this.control.value !== ctrl.value) {
                 this.isConflict = true;

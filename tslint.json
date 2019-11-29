@@ -12,7 +12,7 @@
     "directive-selector": [
       true,
       "attribute",
-      ["app", "controlled"],
+      ["app", "ef"],
       "camelCase"
     ],
     "component-selector": [
