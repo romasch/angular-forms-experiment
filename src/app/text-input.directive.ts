@@ -6,11 +6,11 @@ import {ControlledInput} from './controlled-input';
 })
 export class TextInputDirective {
 
-    private control: ControlledInput<string>;
-    private isFocused = false;
-
     @HostBinding('class.ef-conflict')
     isConflict = false;
+
+    private control: ControlledInput<string>;
+    private isFocused = false;
 
     constructor(private element: ElementRef<HTMLInputElement>) {
         console.log('Text Input Directive', element);
@@ -39,6 +39,7 @@ export class TextInputDirective {
         const value = this.element.nativeElement.value;
         this.isFocused = false;
         this.isConflict = false;
+        // TODO: check if there is a real change
         if (conflict) {
             this.control.onValueChangeWithConflict(value);
         } else {
@@ -50,6 +51,12 @@ export class TextInputDirective {
     escape(): void {
         this.setValue(this.control.value);
         this.element.nativeElement.blur();
+    }
+
+    @HostListener('keydown.enter')
+    enter() {
+        // The enter key can trigger a form submit, so we must publish the new value before.
+        this.blur();
     }
 
     private setValue(value: string) {

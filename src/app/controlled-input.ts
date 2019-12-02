@@ -2,7 +2,7 @@ function ignore() {
 }
 
 export interface ControlledInput<T> {
-    readonly value: T;
+    value: T;
 
     onValueChange(value: T): void;
 
@@ -12,8 +12,8 @@ export interface ControlledInput<T> {
 
 export class ControlledInputImpl<T> implements ControlledInput<T> {
     constructor(
-        readonly value: T,
-        readonly onValueChange: (newVale: T) => void = ignore
+        public value: T,
+        readonly onValueChange: (newValue: T) => void = newValue => this.value = newValue
     ) {
     }
 
