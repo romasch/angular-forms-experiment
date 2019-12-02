@@ -11,10 +11,9 @@ import {ControlledInputImpl} from '../controlled-input';
 export class BackendFormExampleComponent implements OnInit {
 
     form = {
-        firstName: new ControlledInputImpl<string>(''),
-        lastName: new ControlledInputImpl<string>(''),
+        firstName: new ControlledInputImpl<string>('', change => this.updateFirstName(change)),
+        lastName: new ControlledInputImpl<string>('', change => this.updateLastName(change)),
     };
-    submitted: string;
 
     constructor(private be: BackendMockService) {
     }

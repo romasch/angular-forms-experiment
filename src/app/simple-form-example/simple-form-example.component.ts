@@ -17,7 +17,7 @@ export class SimpleFormExampleComponent {
 
     submit(): boolean {
         this.submitted = this.getJson();
-        return false;
+        return false; // TODO: This is still a bit ugly. Maybe it can be solved with another directive.
     }
 
     getJson(): string {
