@@ -1,0 +1,42 @@
+<div class="container mt-5">
+	<h2>Conditional Form Example</h2>
+	<form (submit)="submit()">
+		<div class="row">
+			<div class="col-12">
+				<label>Customer Type (P or C)</label>
+				<input [efControl]="form.customerType" class="form-control" type="text">
+			</div>
+		</div>
+
+		<div class="row" *ngIf="form.customerType.value === 'P'">
+			<div class="col-5">
+				<label>First Name</label>
+				<input [efControl]="form.privateCustomer.firstName" class="form-control" type="text">
+			</div>
+			<div class="col-5">
+				<label>Last Name</label>
+				<input [efControl]="form.privateCustomer.lastName" class="form-control" type="text">
+			</div>
+			<div class="col-2">
+				<button class="btn btn-secondary mt-4">Submit</button>
+			</div>
+		</div>
+		<div class="row" [class.d-none]="form.customerType.value !== 'C'">
+			<div class="col-5">
+				<label>Company Name</label>
+				<input [efControl]="form.companyCustomer.name" class="form-control" type="text">
+			</div>
+			<div class="col-5">
+			</div>
+			<div class="col-2">
+				<button class="btn btn-secondary mt-4">Submit</button>
+			</div>
+		</div>
+	</form>
+	<div class="row">
+		<div class="col-12">Form model: {{getJson()}}</div>
+	</div>
+	<div class="row">
+		<div class="col-12">Last submit: {{submitted}}</div>
+	</div>
+</div>

@@ -35,6 +35,7 @@ export class TextInputDirective {
 
     @HostListener('blur')
     blur(): void {
+        console.log('blurred');
         const conflict: boolean = this.isConflict;
         const value = this.element.nativeElement.value;
         this.isFocused = false;
@@ -45,6 +46,14 @@ export class TextInputDirective {
         } else {
             this.control.onValueChange(value);
         }
+    }
+
+    @HostListener('keydown.tab')
+    tab() {
+        // Needs to be caught, because the tab happens before the blur event, and thus it has a potential to
+        // lose focus on the next input element if it is conditionally displayed.
+        this.blur();
+        // TODO: avoid double change event
     }
 
     @HostListener('keydown.esc')
