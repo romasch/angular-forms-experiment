@@ -6,6 +6,7 @@ import { TextInputDirective } from './text-input.directive';
 import { NumberInputDirective } from './number-input.directive';
 import { SimpleFormExampleComponent } from './simple-form-example/simple-form-example.component';
 import { ConditionalFormExampleComponent } from './conditional-form-example/conditional-form-example.component';
+import { BackendFormExampleComponent } from './backend-form-example/backend-form-example.component';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import { ConditionalFormExampleComponent } from './conditional-form-example/cond
     TextInputDirective,
     NumberInputDirective,
     SimpleFormExampleComponent,
-    ConditionalFormExampleComponent
+    ConditionalFormExampleComponent,
+    BackendFormExampleComponent
   ],
   imports: [
     BrowserModule

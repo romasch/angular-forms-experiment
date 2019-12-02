@@ -1,0 +1,19 @@
+<div class="container mt-5">
+	<h2>Auto Save Form Example</h2>
+	<div class="row">
+		<div class="col-6">
+			<label>First Name</label>
+			<input [efControl]="form.firstName" class="form-control" type="text">
+		</div>
+		<div class="col-6">
+			<label>Last Name</label>
+			<input [efControl]="form.lastName" class="form-control" type="text">
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12">Form model: {{getJson()}}</div>
+	</div>
+	<div class="row">
+		<div class="col-12">Last submit: {{submitted}}</div>
+	</div>
+</div>

@@ -8,7 +8,7 @@
 			</div>
 		</div>
 
-		<div class="row" *ngIf="form.customerType.value === 'P'">
+		<div *ngIf="form.customerType.value === 'P'" class="row">
 			<div class="col-5">
 				<label>First Name</label>
 				<input [efControl]="form.privateCustomer.firstName" class="form-control" type="text">
@@ -21,7 +21,8 @@
 				<button class="btn btn-secondary mt-4">Submit</button>
 			</div>
 		</div>
-		<div class="row" [class.d-none]="form.customerType.value !== 'C'">
+
+		<div [class.d-none]="form.customerType.value !== 'C'" class="row">
 			<div class="col-5">
 				<label>Company Name</label>
 				<input [efControl]="form.companyCustomer.name" class="form-control" type="text">
