@@ -1,5 +1,9 @@
 @import "~bootstrap/scss/bootstrap.scss";
 
 .ef-conflict {
-  border-bottom: 5px solid red !important;
+  border-bottom: 5px solid orange !important;
+}
+
+.ef-invalid {
+  border-left: 5px solid red !important;
 }
