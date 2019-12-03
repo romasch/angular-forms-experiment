@@ -8,15 +8,17 @@ export class TextInputDirective {
 
     @HostBinding('class.ef-conflict')
     isConflict = false;
-
-    @HostBinding('class.ef-invalid')
-    isInvalid = false;
-
     private control: ControlledInput<string>;
     private isFocused = false;
 
     constructor(private element: ElementRef<HTMLInputElement>) {
         console.log('Text Input Directive', element);
+    }
+
+    @HostBinding('class.ef-invalid')
+    get invalid(): boolean {
+        // this.element.nativeElement.setCustomValidity(isInvalid ? 'ERROR' : '');
+        return !this.control.isValid();
     }
 
     @Input('efControl')
@@ -51,9 +53,9 @@ export class TextInputDirective {
         }
     }
 
-    @HostListener('keyup') // TODO: find a better event.
+    @HostListener('input') // TODO: find a better event.
     onChange() {
-        this.checkValid(this.element.nativeElement.value);
+        this.control.runSimpleValidations(this.element.nativeElement.value);
     }
 
     @HostListener('keydown.tab')
@@ -78,11 +80,6 @@ export class TextInputDirective {
 
     private setValue(value: string) {
         this.element.nativeElement.value = value;
-    }
-
-    private checkValid(value: string) {
-        const valid = this.control.validations.every(fn => fn(value));
-        this.isInvalid = !valid;
     }
 
 }

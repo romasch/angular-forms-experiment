@@ -1,0 +1,31 @@
+<div class="container mt-5">
+	<h2>Validation Example</h2>
+	<form (submit)="submit()">
+		<div class="row">
+			<div class="col-3">
+				<label>First Name</label>
+				<input [efControl]="form.firstName" class="form-control" type="text">
+				<div *ngFor="let error of form.firstName.getValidationErrors()" class="invalid-feedback d-block">{{error}}</div>
+			</div>
+			<div class="col-3">
+				<label>Last Name</label>
+				<input [efControl]="form.lastName" class="form-control" type="text">
+				<div *ngFor="let error of form.lastName.getValidationErrors()" class="invalid-feedback d-block">{{error}}</div>
+			</div>
+			<div class="col-3">
+				<label>Email</label>
+				<input [efControl]="form.email" class="form-control" type="text">
+				<div *ngFor="let error of form.email.getValidationErrors()" class="invalid-feedback d-block">{{error}}</div>
+			</div>
+			<div class="col-2">
+				<button class="btn btn-secondary mt-4">Submit</button>
+			</div>
+		</div>
+	</form>
+	<div class="row mt-3">
+		<div class="col-12">Form model: {{getJson()}}</div>
+	</div>
+	<div class="row">
+		<div class="col-12">Last submit: {{submitted}}</div>
+	</div>
+</div>

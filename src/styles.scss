@@ -7,3 +7,7 @@
 .ef-invalid {
   border-left: 5px solid red !important;
 }
+
+input:invalid {
+  border-right: 5px solid red !important;
+}

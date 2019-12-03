@@ -7,6 +7,7 @@ import { NumberInputDirective } from './number-input.directive';
 import { SimpleFormExampleComponent } from './simple-form-example/simple-form-example.component';
 import { ConditionalFormExampleComponent } from './conditional-form-example/conditional-form-example.component';
 import { BackendFormExampleComponent } from './backend-form-example/backend-form-example.component';
+import { ValidationExampleComponent } from './validation-example/validation-example.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { BackendFormExampleComponent } from './backend-form-example/backend-form
     NumberInputDirective,
     SimpleFormExampleComponent,
     ConditionalFormExampleComponent,
-    BackendFormExampleComponent
+    BackendFormExampleComponent,
+    ValidationExampleComponent
   ],
   imports: [
     BrowserModule

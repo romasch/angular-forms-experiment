@@ -10,7 +10,7 @@ export interface Person {
 @Injectable()
 export class BackendMockService {
 
-    person: Person = {firstName: 'John', lastName: 'Doe'};
+    private person: Person = {firstName: 'John', lastName: 'Doe'};
 
     getPerson(): Observable<Person> {
         return of(Object.assign({}, this.person));
