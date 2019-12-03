@@ -2,6 +2,9 @@ import {Component} from '@angular/core';
 import {ControlledInput, ControlledInputImpl, SimpleValidation} from '../controlled-input';
 import {ValidationService} from './validation.service';
 
+const BLACKLIST_CUSTOMER = 'This customer is blacklisted.';
+const EMAIL_ALREADY_DEFINED = 'Email is already defined in system.';
+
 @Component({
     selector: 'app-validation-example',
     templateUrl: './validation-example.component.html',
@@ -40,41 +43,34 @@ export class ValidationExampleComponent {
         return JSON.stringify(form);
     }
 
-    getFirstNameValidationError(): string {
-        return undefined;
-    }
-
-    getLastNameValidationError(): string {
-        return undefined;
-    }
-
-    getEmailValidationError() {
-        return undefined;
-    }
-
     private onFirstNameChange(value: string) {
         this.form.firstName.value = value;
+        this.form.firstName.setValidationResult(BLACKLIST_CUSTOMER, null);
+        this.form.lastName.setValidationResult(BLACKLIST_CUSTOMER, null);
         this.validationService.validateValidCombination(value, this.form.lastName.value)
             .subscribe(valid => {
-                this.form.firstName.setValidationError('Roman Schmocker is not allowed.', valid);
-                this.form.lastName.setValidationError('Roman Schmocker is not allowed.', valid);
+                this.form.firstName.setValidationResult(BLACKLIST_CUSTOMER, valid);
+                this.form.lastName.setValidationResult(BLACKLIST_CUSTOMER, valid);
             });
     }
 
     private onLastNameChange(value: string) {
         this.form.lastName.value = value;
+        this.form.firstName.setValidationResult(BLACKLIST_CUSTOMER, null);
+        this.form.lastName.setValidationResult(BLACKLIST_CUSTOMER, null);
         this.validationService.validateValidCombination(this.form.firstName.value, this.form.lastName.value)
             .subscribe(valid => {
-                this.form.firstName.setValidationError('Roman Schmocker is not allowed.', valid);
-                this.form.lastName.setValidationError('Roman Schmocker is not allowed.', valid);
+                this.form.firstName.setValidationResult(BLACKLIST_CUSTOMER, valid);
+                this.form.lastName.setValidationResult(BLACKLIST_CUSTOMER, valid);
             });
     }
 
     private onEmailChange(value: string) {
         this.form.email.value = value;
+        this.form.email.setValidationResult(EMAIL_ALREADY_DEFINED, null);
         this.validationService.validateUnique(this.form.email.value)
             .subscribe(valid => {
-                this.form.email.setValidationError('Email is already present in system.', valid);
+                this.form.email.setValidationResult(EMAIL_ALREADY_DEFINED, valid);
             });
     }
 }

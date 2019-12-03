@@ -17,7 +17,9 @@ export interface ControlledInput<T> {
 
     isValid(): boolean;
 
-    setValidationError(key: string, valid: boolean);
+    isInvalid(): boolean;
+
+    setValidationResult(key: string, valid: boolean);
 
     onValueChange(value: T): void;
 
@@ -28,7 +30,7 @@ export interface ControlledInput<T> {
 
 export class ControlledInputImpl<T> implements ControlledInput<T> {
 
-    private readonly validationErrors = new Set<string>();
+    private readonly validationResults = new Map<string, boolean | null>();
 
     constructor(
         public value: T,
@@ -43,23 +45,39 @@ export class ControlledInputImpl<T> implements ControlledInput<T> {
     }
 
     isValid(): boolean {
-        return this.validationErrors.size === 0;
+        for (const value of this.validationResults.values()) {
+            if (value === false || value === null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    isInvalid(): boolean {
+        for (const value of this.validationResults.values()) {
+            if (value === false) {
+                return true;
+            }
+        }
+        return false;
     }
 
     getValidationErrors(): string[] {
-        return [...this.validationErrors];
+        const result: string[] = [];
+        for (const [key, value] of this.validationResults) {
+            if (value === false) {
+                result.push(key);
+            }
+        }
+        return result;
     }
 
-    setValidationError(key: string, valid: boolean) {
-        if (valid) {
-            this.validationErrors.delete(key);
-        } else {
-            this.validationErrors.add(key);
-        }
+    setValidationResult(key: string, valid: boolean | null) {
+        this.validationResults.set(key, valid);
     }
 
     runSimpleValidations(value: T): void {
-        this.validations.forEach(validation => this.setValidationError(validation.key, validation.validate(value)));
+        this.validations.forEach(validation => this.setValidationResult(validation.key, validation.validate(value)));
     }
 }
 

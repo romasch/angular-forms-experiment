@@ -6,8 +6,12 @@ import {ControlledInput} from './controlled-input';
 })
 export class TextInputDirective {
 
-    @HostBinding('class.ef-conflict')
+    @HostBinding('class.is-conflict')
     isConflict = false;
+
+    @HostBinding('class.is-pristine')
+    isPristine = true;
+
     private control: ControlledInput<string>;
     private isFocused = false;
 
@@ -15,10 +19,15 @@ export class TextInputDirective {
         console.log('Text Input Directive', element);
     }
 
-    @HostBinding('class.ef-invalid')
+    @HostBinding('class.is-invalid')
     get invalid(): boolean {
         // this.element.nativeElement.setCustomValidity(isInvalid ? 'ERROR' : '');
-        return !this.control.isValid();
+        return this.control.isInvalid();
+    }
+
+    @HostBinding('class.is-valid')
+    get valid(): boolean {
+        return this.control.isValid() && !this.isPristine;
     }
 
     @Input('efControl')
@@ -45,6 +54,7 @@ export class TextInputDirective {
         const value = this.element.nativeElement.value;
         this.isFocused = false;
         this.isConflict = false;
+        this.isPristine = false;
         // TODO: check if there is a real change
         if (conflict) {
             this.control.onValueChangeWithConflict(value);
