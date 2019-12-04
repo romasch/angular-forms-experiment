@@ -29,6 +29,7 @@ export class ValidationExampleComponent {
 
     submit(): boolean {
         if (isAllValid(this.form.firstName, this.form.lastName, this.form.email)) {
+            // TOOO: trigger backend validations as well...
             this.submitted = this.getJson();
         }
         return false;
@@ -76,5 +77,6 @@ export class ValidationExampleComponent {
 }
 
 function isAllValid(...inputs: ControlledInput<any>[]) {
+    inputs.forEach(i => i.validate());
     return inputs.every(i => i.isValid());
 }

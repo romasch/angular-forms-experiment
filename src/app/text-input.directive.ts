@@ -20,14 +20,19 @@ export class TextInputDirective {
     }
 
     @HostBinding('class.is-invalid')
-    get invalid(): boolean {
+    get isInvalid(): boolean {
         // this.element.nativeElement.setCustomValidity(isInvalid ? 'ERROR' : '');
         return this.control.isInvalid();
     }
 
     @HostBinding('class.is-valid')
-    get valid(): boolean {
+    get isValid(): boolean {
         return this.control.isValid() && !this.isPristine;
+    }
+
+    @HostBinding('class.is-dirty')
+    get isDirty(): boolean {
+        return !this.isPristine;
     }
 
     @Input('efControl')
@@ -49,21 +54,18 @@ export class TextInputDirective {
 
     @HostListener('blur')
     blur(): void {
-        console.log('blurred');
+        console.log('blurred', this.element.nativeElement.name);
         const conflict: boolean = this.isConflict;
         const value = this.element.nativeElement.value;
         this.isFocused = false;
         this.isConflict = false;
-        this.isPristine = false;
-        // TODO: check if there is a real change
-        if (conflict) {
-            this.control.onValueChangeWithConflict(value);
-        } else {
-            this.control.onValueChange(value);
-        }
+        this.isPristine = false; // TODO: should only be reset if the value makes it through change detection.
+
+        // TODO: Find solution for conflict resolution.
+        this.control.publish(value);
     }
 
-    @HostListener('input') // TODO: find a better event.
+    @HostListener('input')
     onChange() {
         this.control.runSimpleValidations(this.element.nativeElement.value);
     }
@@ -73,7 +75,6 @@ export class TextInputDirective {
         // Needs to be caught, because the tab happens before the blur event, and thus it has a potential to
         // lose focus on the next input element if it is conditionally displayed.
         this.blur();
-        // TODO: avoid double change event
     }
 
     @HostListener('keydown.esc')

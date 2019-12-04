@@ -1,4 +1,6 @@
 import {isNullOrUndefined} from 'util';
+import {Subject} from 'rxjs';
+import {distinctUntilChanged, skip, startWith, tap} from 'rxjs/operators';
 
 function ignore() {
 }
@@ -21,27 +23,48 @@ export interface ControlledInput<T> {
 
     setValidationResult(key: string, valid: boolean);
 
+    validate(): void;
+
     onValueChange(value: T): void;
 
     onValueChangeWithConflict(value: T): void;
 
     runSimpleValidations(value: T): void;
+
+    publish(value: T): void;
 }
 
 export class ControlledInputImpl<T> implements ControlledInput<T> {
 
     private readonly validationResults = new Map<string, boolean | null>();
+    private readonly valueChange: Subject<T>;
 
     constructor(
         public value: T,
         readonly onValueChange: (newValue: T) => void = newValue => this.value = newValue,
         readonly validations: SimpleValidation<T>[] = []
     ) {
+        this.valueChange = new Subject<T>();
+        this.valueChange
+            .pipe(
+                startWith(value),
+                distinctUntilChanged(),
+                skip(1),
+                tap(v => console.log('Value changed: ', v)))
+            .subscribe(onValueChange);
+    }
+
+    publish(value: T) {
+        this.valueChange.next(value);
     }
 
     onValueChangeWithConflict(value: T): void {
         console.warn('CONFLICT');
         this.onValueChange(value);
+    }
+
+    validate(): void {
+        this.runSimpleValidations(this.value);
     }
 
     isValid(): boolean {
