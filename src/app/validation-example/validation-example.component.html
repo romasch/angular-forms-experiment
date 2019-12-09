@@ -5,17 +5,17 @@
 			<div class="col-3">
 				<label>First Name</label>
 				<input [efControl]="form.firstName" class="form-control" type="text" name="fname">
-				<div *ngFor="let error of form.firstName.getValidationErrors()" class="invalid-feedback d-block">{{error}}</div>
+				<div *ngFor="let error of form.firstName.validationResults.getValidationErrors()" class="invalid-feedback d-block">{{error}}</div>
 			</div>
 			<div class="col-3">
 				<label>Last Name</label>
 				<input [efControl]="form.lastName" class="form-control" type="text" name="lname">
-				<div *ngFor="let error of form.lastName.getValidationErrors()" class="invalid-feedback d-block">{{error}}</div>
+				<div *ngFor="let error of form.lastName.validationResults.getValidationErrors()" class="invalid-feedback d-block">{{error}}</div>
 			</div>
 			<div class="col-3">
 				<label>Email</label>
 				<input [efControl]="form.email" class="form-control" type="text" name="email">
-				<div *ngFor="let error of form.email.getValidationErrors()" class="invalid-feedback d-block">{{error}}</div>
+				<div *ngFor="let error of form.email.validationResults.getValidationErrors()" class="invalid-feedback d-block">{{error}}</div>
 			</div>
 			<div class="col-3">
 				<label>Email</label>

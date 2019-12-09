@@ -46,37 +46,37 @@ export class ValidationExampleComponent {
 
     private onFirstNameChange(value: string) {
         this.form.firstName.value = value;
-        this.form.firstName.setValidationResult(BLACKLIST_CUSTOMER, null);
-        this.form.lastName.setValidationResult(BLACKLIST_CUSTOMER, null);
+        this.form.firstName.validationResults.registerValidationInProgress(BLACKLIST_CUSTOMER);
+        this.form.lastName.validationResults.registerValidationInProgress(BLACKLIST_CUSTOMER);
         this.validationService.validateValidCombination(value, this.form.lastName.value)
             .subscribe(valid => {
-                this.form.firstName.setValidationResult(BLACKLIST_CUSTOMER, valid);
-                this.form.lastName.setValidationResult(BLACKLIST_CUSTOMER, valid);
+                this.form.firstName.validationResults.registerValidationResult(BLACKLIST_CUSTOMER, valid);
+                this.form.lastName.validationResults.registerValidationResult(BLACKLIST_CUSTOMER, valid);
             });
     }
 
     private onLastNameChange(value: string) {
         this.form.lastName.value = value;
-        this.form.firstName.setValidationResult(BLACKLIST_CUSTOMER, null);
-        this.form.lastName.setValidationResult(BLACKLIST_CUSTOMER, null);
+        this.form.firstName.validationResults.registerValidationInProgress(BLACKLIST_CUSTOMER);
+        this.form.lastName.validationResults.registerValidationInProgress(BLACKLIST_CUSTOMER);
         this.validationService.validateValidCombination(this.form.firstName.value, this.form.lastName.value)
             .subscribe(valid => {
-                this.form.firstName.setValidationResult(BLACKLIST_CUSTOMER, valid);
-                this.form.lastName.setValidationResult(BLACKLIST_CUSTOMER, valid);
+                this.form.firstName.validationResults.registerValidationResult(BLACKLIST_CUSTOMER, valid);
+                this.form.lastName.validationResults.registerValidationResult(BLACKLIST_CUSTOMER, valid);
             });
     }
 
     private onEmailChange(value: string) {
         this.form.email.value = value;
-        this.form.email.setValidationResult(EMAIL_ALREADY_DEFINED, null);
+        this.form.email.validationResults.registerValidationInProgress(EMAIL_ALREADY_DEFINED);
         this.validationService.validateUnique(this.form.email.value)
             .subscribe(valid => {
-                this.form.email.setValidationResult(EMAIL_ALREADY_DEFINED, valid);
+                this.form.email.validationResults.registerValidationResult(EMAIL_ALREADY_DEFINED, valid);
             });
     }
 }
 
 function isAllValid(...inputs: ControlledInput<any>[]) {
     inputs.forEach(i => i.validate());
-    return inputs.every(i => i.isValid());
+    return inputs.every(i => i.validationResults.isValid());
 }

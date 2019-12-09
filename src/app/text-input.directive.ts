@@ -22,12 +22,12 @@ export class TextInputDirective {
     @HostBinding('class.is-invalid')
     get isInvalid(): boolean {
         // this.element.nativeElement.setCustomValidity(isInvalid ? 'ERROR' : '');
-        return this.control.isInvalid();
+        return this.control.validationResults.isInvalid();
     }
 
     @HostBinding('class.is-valid')
     get isValid(): boolean {
-        return this.control.isValid() && !this.isPristine;
+        return this.control.validationResults.isValid() && !this.isPristine;
     }
 
     @HostBinding('class.is-dirty')
@@ -74,7 +74,7 @@ export class TextInputDirective {
     tab() {
         // Needs to be caught, because the tab happens before the blur event, and thus it has a potential to
         // lose focus on the next input element if it is conditionally displayed.
-        this.blur();
+        this.blur(); // TODO: should not set this.isFocused in this case.
     }
 
     @HostListener('keydown.esc')

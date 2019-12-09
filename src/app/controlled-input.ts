@@ -1,6 +1,7 @@
 import {isNullOrUndefined} from 'util';
 import {Subject} from 'rxjs';
 import {distinctUntilChanged, skip, startWith, tap} from 'rxjs/operators';
+import {ValidationResults} from './validation-results';
 
 function ignore() {
 }
@@ -16,12 +17,7 @@ export const required: SimpleValidation<any> = new SimpleValidation('ef.required
 
 export interface ControlledInput<T> {
     value: T;
-
-    isValid(): boolean;
-
-    isInvalid(): boolean;
-
-    setValidationResult(key: string, valid: boolean);
+    readonly validationResults: ValidationResults;
 
     validate(): void;
 
@@ -36,7 +32,7 @@ export interface ControlledInput<T> {
 
 export class ControlledInputImpl<T> implements ControlledInput<T> {
 
-    private readonly validationResults = new Map<string, boolean | null>();
+    readonly validationResults = new ValidationResults();
     private readonly valueChange: Subject<T>;
 
     constructor(
@@ -67,40 +63,8 @@ export class ControlledInputImpl<T> implements ControlledInput<T> {
         this.runSimpleValidations(this.value);
     }
 
-    isValid(): boolean {
-        for (const value of this.validationResults.values()) {
-            if (value === false || value === null) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    isInvalid(): boolean {
-        for (const value of this.validationResults.values()) {
-            if (value === false) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    getValidationErrors(): string[] {
-        const result: string[] = [];
-        for (const [key, value] of this.validationResults) {
-            if (value === false) {
-                result.push(key);
-            }
-        }
-        return result;
-    }
-
-    setValidationResult(key: string, valid: boolean | null) {
-        this.validationResults.set(key, valid);
-    }
-
     runSimpleValidations(value: T): void {
-        this.validations.forEach(validation => this.setValidationResult(validation.key, validation.validate(value)));
+        this.validations.forEach(validation => this.validationResults.registerValidationResult(validation.key, validation.validate(value)));
     }
 }
 
