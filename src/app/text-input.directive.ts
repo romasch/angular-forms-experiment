@@ -86,7 +86,7 @@ export class TextInputDirective {
     @HostListener('keydown.enter')
     enter() {
         // The enter key can trigger a form submit, so we must publish the new value before.
-        this.blur();
+        this.blur(); // TODO: should not set this.isFocused in this case.
     }
 
     private setValue(value: string) {

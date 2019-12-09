@@ -9,6 +9,10 @@
 			<label>Last Name</label>
 			<input [efControl]="form.lastName" class="form-control" type="text">
 		</div>
+		<div class="col-6">
+			<label>Last Name</label>
+			<input [efControl]="form.street" [ngbTypeahead]="search" class="form-control" type="text">
+		</div>
 	</div>
 	<div class="row">
 		<div class="col-12">Form model: {{getJson()}}</div>
