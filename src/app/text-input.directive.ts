@@ -12,7 +12,6 @@ export class TextInputDirective {
     private control: ControlledInput<string>;
     private isFocused = false;
     private valueBeforeFocus: string;
-    // private lastPublishedValue: string;
 
     constructor(private element: ElementRef<HTMLInputElement>) {
     }
@@ -57,11 +56,12 @@ export class TextInputDirective {
     blur(): void {
         this.isFocused = false;
         this.publishWhenChanged();
+        // TODO: set to controlled value if change happened after publish (stupid tab handling of ngbTypeahead...).
     }
 
     @HostListener('input')
     onChange() {
-        this.control.runSimpleValidations(this.element.nativeElement.value);
+        this.control.validate(this.element.nativeElement.value);
     }
 
     @HostListener('keydown.tab')

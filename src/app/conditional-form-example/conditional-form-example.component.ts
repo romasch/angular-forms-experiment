@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {ControlledInputImpl} from '../controlled-input';
+import {textInput} from '../controlled-input';
 
 @Component({
     selector: 'app-conditional-form-example',
@@ -9,13 +9,13 @@ import {ControlledInputImpl} from '../controlled-input';
 export class ConditionalFormExampleComponent {
 
     form = {
-        customerType: new ControlledInputImpl<string>('P'),
+        customerType: textInput({initialValue: 'P'}),
         privateCustomer: {
-            firstName: new ControlledInputImpl<string>(''),
-            lastName: new ControlledInputImpl<string>(''),
+            firstName: textInput(),
+            lastName: textInput(),
         },
         companyCustomer: {
-            name: new ControlledInputImpl<string>('')
+            name: textInput()
         }
     };
 

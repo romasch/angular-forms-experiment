@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {BackendMockService} from './backend-mock.service';
-import {ControlledInputImpl} from '../controlled-input';
+import {textInput} from '../controlled-input';
 import {Observable} from 'rxjs';
 import {debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators';
 
@@ -13,9 +13,9 @@ import {debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators';
 export class BackendFormExampleComponent implements OnInit {
 
     form = {
-        firstName: new ControlledInputImpl<string>('', change => this.updateFirstName(change)),
-        lastName: new ControlledInputImpl<string>('', change => this.updateLastName(change)),
-        street: new ControlledInputImpl<string>('', change => this.updateStreet(change)),
+        firstName: textInput({onValuePublishedSubscribers: [change => this.updateFirstName(change)]}),
+        lastName: textInput({onValuePublishedSubscribers: [change => this.updateLastName(change)]}),
+        street: textInput({onValuePublishedSubscribers: [change => this.updateStreet(change)]}),
     };
 
     constructor(private be: BackendMockService) {
@@ -54,10 +54,20 @@ export class BackendFormExampleComponent implements OnInit {
     }
 
     private fetch() {
+        // TODO: this.form.firstName.setValue() would definitely be nicer.
         this.be.getPerson().subscribe(p => {
-            this.form.firstName = new ControlledInputImpl<string>(p.firstName, change => this.updateFirstName(change));
-            this.form.lastName = new ControlledInputImpl<string>(p.lastName, change => this.updateLastName(change));
-            this.form.street = new ControlledInputImpl<string>(p.street, change => this.updateStreet(change));
+            this.form.firstName = textInput({
+                initialValue: p.firstName,
+                onValuePublishedSubscribers: [change => this.updateFirstName(change)]
+            });
+            this.form.lastName = textInput({
+                initialValue: p.lastName,
+                onValuePublishedSubscribers: [change => this.updateLastName(change)]
+            });
+            this.form.street = textInput({
+                initialValue: p.street,
+                onValuePublishedSubscribers: [change => this.updateStreet(change)]
+            });
         });
     }
 

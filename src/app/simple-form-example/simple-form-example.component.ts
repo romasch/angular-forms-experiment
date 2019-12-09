@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {ControlledInputImpl, required} from '../controlled-input';
+import {required, textInput} from '../controlled-input';
 
 @Component({
     selector: 'app-simple-form-example',
@@ -9,8 +9,8 @@ import {ControlledInputImpl, required} from '../controlled-input';
 export class SimpleFormExampleComponent {
 
     form = {
-        firstName: new ControlledInputImpl<string>('', undefined, [required]),
-        lastName: new ControlledInputImpl<string>(''),
+        firstName: textInput({validations: [required]}),
+        lastName: textInput(),
     };
 
     submitted: string;

@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {ControlledInput, ControlledInputImpl, SimpleValidation} from '../controlled-input';
+import {ControlledInput, SimpleValidation, textInput} from '../controlled-input';
 import {ValidationService} from './validation.service';
 
 const BLACKLIST_CUSTOMER = 'This customer is blacklisted.';
@@ -19,9 +19,17 @@ export class ValidationExampleComponent {
     private readonly validEmail = new SimpleValidation<string>('Must be a valid email', val => this.validationService.validateEmail(val));
 
     form = {
-        firstName: new ControlledInputImpl<string>('', value => this.onFirstNameChange(value)),
-        lastName: new ControlledInputImpl<string>('', value => this.onLastNameChange(value), [this.required]),
-        email: new ControlledInputImpl<string>('', value => this.onEmailChange(value), [this.required, this.validEmail])
+        firstName: textInput({
+            onValuePublishedSubscribers: [value => this.onFirstNameChange(value)],
+        }),
+        lastName: textInput({
+            onValuePublishedSubscribers: [value => this.onLastNameChange(value)],
+            validations: [this.required]
+        }),
+        email: textInput({
+            onValuePublishedSubscribers: [value => this.onEmailChange(value)],
+            validations: [this.required, this.validEmail]
+        })
     };
 
     constructor(private validationService: ValidationService) {
@@ -45,7 +53,6 @@ export class ValidationExampleComponent {
     }
 
     private onFirstNameChange(value: string) {
-        this.form.firstName.value = value;
         this.form.firstName.validationResults.registerValidationInProgress(BLACKLIST_CUSTOMER);
         this.form.lastName.validationResults.registerValidationInProgress(BLACKLIST_CUSTOMER);
         this.validationService.validateValidCombination(value, this.form.lastName.value)
@@ -56,10 +63,9 @@ export class ValidationExampleComponent {
     }
 
     private onLastNameChange(value: string) {
-        this.form.lastName.value = value;
         this.form.firstName.validationResults.registerValidationInProgress(BLACKLIST_CUSTOMER);
         this.form.lastName.validationResults.registerValidationInProgress(BLACKLIST_CUSTOMER);
-        this.validationService.validateValidCombination(this.form.firstName.value, this.form.lastName.value)
+        this.validationService.validateValidCombination(this.form.firstName.value, value)
             .subscribe(valid => {
                 this.form.firstName.validationResults.registerValidationResult(BLACKLIST_CUSTOMER, valid);
                 this.form.lastName.validationResults.registerValidationResult(BLACKLIST_CUSTOMER, valid);
@@ -67,9 +73,8 @@ export class ValidationExampleComponent {
     }
 
     private onEmailChange(value: string) {
-        this.form.email.value = value;
         this.form.email.validationResults.registerValidationInProgress(EMAIL_ALREADY_DEFINED);
-        this.validationService.validateUnique(this.form.email.value)
+        this.validationService.validateUnique(value)
             .subscribe(valid => {
                 this.form.email.validationResults.registerValidationResult(EMAIL_ALREADY_DEFINED, valid);
             });
@@ -77,6 +82,6 @@ export class ValidationExampleComponent {
 }
 
 function isAllValid(...inputs: ControlledInput<any>[]) {
-    inputs.forEach(i => i.validate());
+    inputs.forEach(i => i.validate(i.value));
     return inputs.every(i => i.validationResults.isValid());
 }
