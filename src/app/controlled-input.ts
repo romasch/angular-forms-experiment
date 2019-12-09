@@ -1,10 +1,7 @@
 import {isNullOrUndefined} from 'util';
-import {Subject} from 'rxjs';
-import {distinctUntilChanged, skip, startWith, tap} from 'rxjs/operators';
 import {ValidationResults} from './validation-results';
 
-function ignore() {
-}
+export type ValuePublishedSubscriber<T> = (value: T, previousValue: T, latestFormValue: T) => void;
 
 export type ValidationFunction<T> = (t: T) => boolean;
 
@@ -21,42 +18,30 @@ export interface ControlledInput<T> {
 
     validate(): void;
 
-    onValueChange(value: T): void;
-
-    onValueChangeWithConflict(value: T): void;
-
     runSimpleValidations(value: T): void;
 
-    publish(value: T): void;
+    publish(value: T, previousValue: T, latestFormValue: T): void;
 }
 
 export class ControlledInputImpl<T> implements ControlledInput<T> {
 
     readonly validationResults = new ValidationResults();
-    private readonly valueChange: Subject<T>;
+    private readonly subscribers: Array<ValuePublishedSubscriber<T>> = [];
 
     constructor(
         public value: T,
-        readonly onValueChange: (newValue: T) => void = newValue => this.value = newValue,
+        onValueChange?: ValuePublishedSubscriber<T>,
         readonly validations: SimpleValidation<T>[] = []
     ) {
-        this.valueChange = new Subject<T>();
-        this.valueChange
-            .pipe(
-                startWith(value),
-                distinctUntilChanged(),
-                skip(1),
-                tap(v => console.log('Value changed: ', v)))
-            .subscribe(onValueChange);
+        if (onValueChange) {
+            this.subscribers.push(onValueChange);
+        }
     }
 
-    publish(value: T) {
-        this.valueChange.next(value);
-    }
-
-    onValueChangeWithConflict(value: T): void {
-        console.warn('CONFLICT');
-        this.onValueChange(value);
+    publish(value: T, previousValue: T, latestFormValue: T) {
+        // TODO: Check if default this makes sense in all cases.
+        this.defaultOnValuePublished(value, previousValue, latestFormValue);
+        this.subscribers.forEach(fn => fn(value, previousValue, latestFormValue));
     }
 
     validate(): void {
@@ -65,6 +50,13 @@ export class ControlledInputImpl<T> implements ControlledInput<T> {
 
     runSimpleValidations(value: T): void {
         this.validations.forEach(validation => this.validationResults.registerValidationResult(validation.key, validation.validate(value)));
+    }
+
+    private defaultOnValuePublished(value: T, previousValue: T, latestFormValue: T): void {
+        if (previousValue !== latestFormValue) {
+            console.warn('CONFLICT');
+        }
+        this.value = value;
     }
 }
 

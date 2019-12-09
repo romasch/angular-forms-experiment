@@ -6,17 +6,20 @@ import {ControlledInput} from './controlled-input';
 })
 export class TextInputDirective {
 
-    @HostBinding('class.is-conflict')
-    isConflict = false;
-
     @HostBinding('class.is-pristine')
     isPristine = true;
 
     private control: ControlledInput<string>;
     private isFocused = false;
+    private valueBeforeFocus: string;
+    // private lastPublishedValue: string;
 
     constructor(private element: ElementRef<HTMLInputElement>) {
-        console.log('Text Input Directive', element);
+    }
+
+    @HostBinding('class.is-conflict')
+    get isConflict(): boolean {
+        return this.isFocused && this.valueBeforeFocus !== this.control.value;
     }
 
     @HostBinding('class.is-invalid')
@@ -37,11 +40,7 @@ export class TextInputDirective {
 
     @Input('efControl')
     set efControl(ctrl: ControlledInput<string>) {
-        if (this.isFocused) {
-            if (this.control.value !== ctrl.value) {
-                this.isConflict = true;
-            }
-        } else {
+        if (!this.isFocused) {
             this.element.nativeElement.value = ctrl.value;
         }
         this.control = ctrl;
@@ -49,20 +48,15 @@ export class TextInputDirective {
 
     @HostListener('focus')
     focus(): void {
+        this.checkConsistency();
         this.isFocused = true;
+        this.valueBeforeFocus = this.control.value;
     }
 
     @HostListener('blur')
     blur(): void {
-        console.log('blurred', this.element.nativeElement.name);
-        const conflict: boolean = this.isConflict;
-        const value = this.element.nativeElement.value;
         this.isFocused = false;
-        this.isConflict = false;
-        this.isPristine = false; // TODO: should only be reset if the value makes it through change detection.
-
-        // TODO: Find solution for conflict resolution.
-        this.control.publish(value);
+        this.publishWhenChanged();
     }
 
     @HostListener('input')
@@ -74,7 +68,7 @@ export class TextInputDirective {
     tab() {
         // Needs to be caught, because the tab happens before the blur event, and thus it has a potential to
         // lose focus on the next input element if it is conditionally displayed.
-        this.blur(); // TODO: should not set this.isFocused in this case.
+        this.publishWhenChanged();
     }
 
     @HostListener('keydown.esc')
@@ -86,11 +80,34 @@ export class TextInputDirective {
     @HostListener('keydown.enter')
     enter() {
         // The enter key can trigger a form submit, so we must publish the new value before.
-        this.blur(); // TODO: should not set this.isFocused in this case.
+        this.publishWhenChanged();
     }
+
+    private publishWhenChanged() {
+        const currentValue = this.element.nativeElement.value;
+        if (currentValue === this.valueBeforeFocus) {
+            return;
+        }
+        // if (currentValue === this.lastPublishedValue) {
+        //     return;
+        // }
+        this.control.publish(currentValue, this.valueBeforeFocus, this.control.value);
+        this.valueBeforeFocus = currentValue;
+        this.isPristine = false;
+    }
+
 
     private setValue(value: string) {
         this.element.nativeElement.value = value;
     }
 
+    private checkConsistency(): void {
+        if (!this.isValueConsistent()) {
+            console.warn('Value inconsistency detected!');
+        }
+    }
+
+    private isValueConsistent(): boolean {
+        return this.control.value === this.element.nativeElement.value;
+    }
 }
