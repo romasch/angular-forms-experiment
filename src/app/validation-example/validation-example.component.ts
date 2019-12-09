@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
-import {ControlledInput, SimpleValidation, textInput} from '../controlled-input';
+import {ControlledInput, ImmediateValidation, textInput} from '../controlled-input';
 import {ValidationService} from './validation.service';
+import {RemoteValidation} from '../remote-validation';
 
 const BLACKLIST_CUSTOMER = 'This customer is blacklisted.';
 const EMAIL_ALREADY_DEFINED = 'Email is already defined in system.';
@@ -14,30 +15,38 @@ const EMAIL_ALREADY_DEFINED = 'Email is already defined in system.';
 export class ValidationExampleComponent {
 
     submitted: string;
-
-    private readonly required = new SimpleValidation<string>('This value is required.', val => this.validationService.validateRequired(val));
-    private readonly validEmail = new SimpleValidation<string>('Must be a valid email', val => this.validationService.validateEmail(val));
+    remoteValidations: RemoteValidation[];
+    private readonly required = new ImmediateValidation<string>('This value is required.', val => this.validationService.validateRequired(val));
+    private readonly validEmail = new ImmediateValidation<string>('Must be a valid email', val => this.validationService.validateEmail(val));
 
     form = {
         firstName: textInput({
-            onValuePublishedSubscribers: [value => this.onFirstNameChange(value)],
+            // onValuePublishedSubscribers: [value => this.onFirstNameChange(value)],
         }),
         lastName: textInput({
-            onValuePublishedSubscribers: [value => this.onLastNameChange(value)],
+            // onValuePublishedSubscribers: [value => this.onLastNameChange(value)],
             validations: [this.required]
         }),
         email: textInput({
-            onValuePublishedSubscribers: [value => this.onEmailChange(value)],
+            // onValuePublishedSubscribers: [value => this.onEmailChange(value)],
             validations: [this.required, this.validEmail]
         })
     };
 
     constructor(private validationService: ValidationService) {
+        this.remoteValidations = [
+            new RemoteValidation(BLACKLIST_CUSTOMER,
+                [this.form.firstName, this.form.lastName],
+                () => this.validationService.validateValidCombination(this.form.firstName.value, this.form.lastName.value)),
+            new RemoteValidation(EMAIL_ALREADY_DEFINED,
+                [this.form.email],
+                () => this.validationService.validateUnique(this.form.email.value))
+        ];
     }
 
     submit(): boolean {
         if (isAllValid(this.form.firstName, this.form.lastName, this.form.email)) {
-            // TOOO: trigger backend validations as well...
+            // TODO: trigger backend validations as well...
             this.submitted = this.getJson();
         }
         return false;
@@ -52,33 +61,33 @@ export class ValidationExampleComponent {
         return JSON.stringify(form);
     }
 
-    private onFirstNameChange(value: string) {
-        this.form.firstName.validationResults.registerValidationInProgress(BLACKLIST_CUSTOMER);
-        this.form.lastName.validationResults.registerValidationInProgress(BLACKLIST_CUSTOMER);
-        this.validationService.validateValidCombination(value, this.form.lastName.value)
-            .subscribe(valid => {
-                this.form.firstName.validationResults.registerValidationResult(BLACKLIST_CUSTOMER, valid);
-                this.form.lastName.validationResults.registerValidationResult(BLACKLIST_CUSTOMER, valid);
-            });
-    }
-
-    private onLastNameChange(value: string) {
-        this.form.firstName.validationResults.registerValidationInProgress(BLACKLIST_CUSTOMER);
-        this.form.lastName.validationResults.registerValidationInProgress(BLACKLIST_CUSTOMER);
-        this.validationService.validateValidCombination(this.form.firstName.value, value)
-            .subscribe(valid => {
-                this.form.firstName.validationResults.registerValidationResult(BLACKLIST_CUSTOMER, valid);
-                this.form.lastName.validationResults.registerValidationResult(BLACKLIST_CUSTOMER, valid);
-            });
-    }
-
-    private onEmailChange(value: string) {
-        this.form.email.validationResults.registerValidationInProgress(EMAIL_ALREADY_DEFINED);
-        this.validationService.validateUnique(value)
-            .subscribe(valid => {
-                this.form.email.validationResults.registerValidationResult(EMAIL_ALREADY_DEFINED, valid);
-            });
-    }
+    // private onFirstNameChange(value: string) {
+    //     this.form.firstName.validationResults.registerValidationInProgress(BLACKLIST_CUSTOMER);
+    //     this.form.lastName.validationResults.registerValidationInProgress(BLACKLIST_CUSTOMER);
+    //     this.validationService.validateValidCombination(value, this.form.lastName.value)
+    //         .subscribe(valid => {
+    //             this.form.firstName.validationResults.registerValidationResult(BLACKLIST_CUSTOMER, valid);
+    //             this.form.lastName.validationResults.registerValidationResult(BLACKLIST_CUSTOMER, valid);
+    //         });
+    // }
+    //
+    // private onLastNameChange(value: string) {
+    //     this.form.firstName.validationResults.registerValidationInProgress(BLACKLIST_CUSTOMER);
+    //     this.form.lastName.validationResults.registerValidationInProgress(BLACKLIST_CUSTOMER);
+    //     this.validationService.validateValidCombination(this.form.firstName.value, value)
+    //         .subscribe(valid => {
+    //             this.form.firstName.validationResults.registerValidationResult(BLACKLIST_CUSTOMER, valid);
+    //             this.form.lastName.validationResults.registerValidationResult(BLACKLIST_CUSTOMER, valid);
+    //         });
+    // }
+    //
+    // private onEmailChange(value: string) {
+    //     this.form.email.validationResults.registerValidationInProgress(EMAIL_ALREADY_DEFINED);
+    //     this.validationService.validateUnique(value)
+    //         .subscribe(valid => {
+    //             this.form.email.validationResults.registerValidationResult(EMAIL_ALREADY_DEFINED, valid);
+    //         });
+    // }
 }
 
 function isAllValid(...inputs: ControlledInput<any>[]) {

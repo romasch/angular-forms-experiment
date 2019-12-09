@@ -3,14 +3,15 @@ import {ValidationResults} from './validation-results';
 
 export type ValuePublishedSubscriber<T> = (value: T, previousValue: T, latestFormValue: T) => void;
 
-export type ValidationFunction<T> = (t: T) => boolean;
+export type ImmediateValidationFunction<T> = (t: T) => boolean;
 
-export class SimpleValidation<T> {
-    constructor(readonly key: string, readonly validate: ValidationFunction<T>) {
+export class ImmediateValidation<T> {
+    constructor(readonly key: string, readonly validate: ImmediateValidationFunction<T>) {
     }
 }
 
-export const required: SimpleValidation<any> = new SimpleValidation('ef.required', value => !isNullOrUndefined(value) && value !== '');
+const isNotEmpty: ImmediateValidationFunction<any> = value => !isNullOrUndefined(value) && value !== '';
+export const required: ImmediateValidation<any> = new ImmediateValidation('ef.required', isNotEmpty);
 
 export interface ControlledInput<T> {
     readonly value: T;
@@ -18,12 +19,14 @@ export interface ControlledInput<T> {
 
     validate(value: T): void;
 
+    subscribe(fn: ValuePublishedSubscriber<T>): void;
+
     publish(value: T, previousValue: T, latestFormValue: T): void;
 }
 
 export interface InputOptions<T> {
     initialValue: T;
-    validations: Array<SimpleValidation<T>>;
+    validations: Array<ImmediateValidation<T>>;
     onValuePublishedSubscribers: Array<ValuePublishedSubscriber<T>>;
 }
 
@@ -44,13 +47,17 @@ class ControlledInputImpl<T> implements ControlledInput<T> {
 
     value: T;
     readonly validationResults = new ValidationResults();
-    private readonly validations: Array<SimpleValidation<T>>;
+    private readonly validations: Array<ImmediateValidation<T>>;
     private readonly onValuePublishedSubscribers: Array<ValuePublishedSubscriber<T>>;
 
     constructor(options: InputOptions<T>) {
         this.value = options.initialValue;
         this.validations = options.validations;
         this.onValuePublishedSubscribers = options.onValuePublishedSubscribers;
+    }
+
+    subscribe(fn: ValuePublishedSubscriber<T>): void {
+        this.onValuePublishedSubscribers.push(fn);
     }
 
     publish(value: T, previousValue: T, latestFormValue: T) {
