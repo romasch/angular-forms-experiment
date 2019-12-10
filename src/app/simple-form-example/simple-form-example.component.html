@@ -2,13 +2,17 @@
 	<h2>Simple Form Example</h2>
 	<form (submit)="submit()">
 		<div class="row">
-			<div class="col-5">
+			<div class="col-3">
 				<label>First Name</label>
 				<input [efControl]="form.firstName" class="form-control" type="text">
 			</div>
-			<div class="col-5">
+			<div class="col-3">
 				<label>Last Name</label>
 				<input [efControl]="form.lastName" class="form-control" type="text">
+			</div>
+			<div class="col-3">
+				<label>Menus</label>
+				<input [efControl]="form.menus" class="form-control" type="number">
 			</div>
 			<div class="col-2">
 				<button class="btn btn-secondary mt-4">Submit</button>

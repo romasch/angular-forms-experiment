@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {required, textInput} from '../controlled-input';
+import {numberInput, required, textInput} from '../controlled-input';
 
 @Component({
     selector: 'app-simple-form-example',
@@ -11,6 +11,7 @@ export class SimpleFormExampleComponent {
     form = {
         firstName: textInput({validations: [required]}),
         lastName: textInput(),
+        menus: numberInput({validations: [required]}),
     };
 
     submitted: string;
@@ -23,7 +24,8 @@ export class SimpleFormExampleComponent {
     getJson(): string {
         const form = {
             firstName: this.form.firstName.value,
-            lastName: this.form.lastName.value
+            lastName: this.form.lastName.value,
+            menus: this.form.menus.value
         };
         return JSON.stringify(form);
     }

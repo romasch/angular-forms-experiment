@@ -18,7 +18,7 @@ export class TextInputDirective {
 
     @HostBinding('class.is-conflict')
     get isConflict(): boolean {
-        return this.isFocused && this.valueBeforeFocus !== this.control.value;
+        return this.isFocused && !Object.is(this.valueBeforeFocus, this.control.value);
     }
 
     @HostBinding('class.is-invalid')
@@ -40,7 +40,7 @@ export class TextInputDirective {
     @Input('efControl')
     set efControl(ctrl: ControlledInput<string>) {
         if (!this.isFocused) {
-            this.element.nativeElement.value = ctrl.value;
+            this.setValue(ctrl.value);
         }
         this.control = ctrl;
     }
@@ -108,6 +108,6 @@ export class TextInputDirective {
     }
 
     private isValueConsistent(): boolean {
-        return this.control.value === this.element.nativeElement.value;
+        return Object.is(this.control.value, this.element.nativeElement.value);
     }
 }

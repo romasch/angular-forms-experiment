@@ -10,7 +10,8 @@ export class ImmediateValidation<T> {
     }
 }
 
-const isNotEmpty: ImmediateValidationFunction<any> = value => !isNullOrUndefined(value) && value !== '';
+// const isNotEmpty: ImmediateValidationFunction<any> = value => !isNullOrUndefined(value) && value !== '';
+const isNotEmpty: ImmediateValidationFunction<any> = value => !!value;
 export const required: ImmediateValidation<any> = new ImmediateValidation('ef.required', isNotEmpty);
 
 export interface ControlledInput<T> {
@@ -42,6 +43,17 @@ export function textInput(options: Partial<InputOptions<string>> = {}): Controll
     return new ControlledInputImpl(merged);
 }
 
+export function numberInput(options: Partial<InputOptions<number>> = {}): ControlledInput<number> {
+    const defaults: InputOptions<number> = {
+        initialValue: NaN,
+        validations: [],
+        onValuePublishedSubscribers: []
+    };
+
+    const merged = Object.assign(defaults, options);
+
+    return new ControlledInputImpl(merged);
+}
 
 class ControlledInputImpl<T> implements ControlledInput<T> {
 
