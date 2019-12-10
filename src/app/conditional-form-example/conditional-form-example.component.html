@@ -4,28 +4,33 @@
 		<div class="row">
 			<div class="col-12">
 				<label>Customer Type (P or C)</label>
-				<input [efControl]="form.customerType" class="form-control" type="text">
+				<input [ngClass]="toBootstrapClassList(form.customerType)" [ufState]="form.customerType" class="form-control" type="text">
 			</div>
 		</div>
 
-		<div *ngIf="form.customerType.value === 'P'" class="row">
+		<div *ngIf="form.customerType.getValue() === 'P'" class="row">
 			<div class="col-5">
 				<label>First Name</label>
-				<input [efControl]="form.privateCustomer.firstName" class="form-control" type="text">
+				<input [ngClass]="toBootstrapClassList(form.privateCustomer.firstName)"
+					   [ufState]="form.privateCustomer.firstName"
+					   class="form-control" type="text">
 			</div>
 			<div class="col-5">
 				<label>Last Name</label>
-				<input [efControl]="form.privateCustomer.lastName" class="form-control" type="text">
+				<input [ngClass]="toBootstrapClassList(form.privateCustomer.lastName)"
+					   [ufState]="form.privateCustomer.lastName" class="form-control" type="text">
 			</div>
 			<div class="col-2">
 				<button class="btn btn-secondary mt-4">Submit</button>
 			</div>
 		</div>
 
-		<div [class.d-none]="form.customerType.value !== 'C'" class="row">
+		<div [class.d-none]="form.customerType.getValue() !== 'C'" class="row">
 			<div class="col-5">
 				<label>Company Name</label>
-				<input [efControl]="form.companyCustomer.name" class="form-control" type="text">
+				<input [ngClass]="toBootstrapClassList(form.companyCustomer.name)"
+					   [ufState]="form.companyCustomer.name" class="form-control"
+					   type="text">
 			</div>
 			<div class="col-5">
 			</div>

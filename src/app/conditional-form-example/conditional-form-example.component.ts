@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {textInput} from '../controlled-input';
+import {toBootstrapClassList} from '../bootstrap-utils';
 
 @Component({
     selector: 'app-conditional-form-example',
@@ -7,6 +8,8 @@ import {textInput} from '../controlled-input';
     styleUrls: ['./conditional-form-example.component.scss']
 })
 export class ConditionalFormExampleComponent {
+
+    toBootstrapClassList = toBootstrapClassList;
 
     form = {
         customerType: textInput({initialValue: 'P'}),
@@ -28,9 +31,9 @@ export class ConditionalFormExampleComponent {
 
     getJson(): string {
         const form = {
-            firstName: this.form.privateCustomer.firstName.value,
-            lastName: this.form.privateCustomer.lastName.value,
-            companyName: this.form.companyCustomer.name.value
+            firstName: this.form.privateCustomer.firstName.getValue(),
+            lastName: this.form.privateCustomer.lastName.getValue(),
+            companyName: this.form.companyCustomer.name.getValue()
         };
         return JSON.stringify(form);
     }

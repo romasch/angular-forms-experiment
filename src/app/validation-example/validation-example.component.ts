@@ -1,7 +1,8 @@
 import {Component} from '@angular/core';
-import {ControlledInput, ImmediateValidation, textInput} from '../controlled-input';
+import {FormFieldState, ImmediateValidation, textInput} from '../controlled-input';
 import {ValidationService} from './validation.service';
 import {RemoteValidation} from '../remote-validation';
+import {toBootstrapClassList} from '../bootstrap-utils';
 
 const BLACKLIST_CUSTOMER = 'This customer is blacklisted.';
 const EMAIL_ALREADY_DEFINED = 'Email is already defined in system.';
@@ -13,6 +14,8 @@ const EMAIL_ALREADY_DEFINED = 'Email is already defined in system.';
     providers: [ValidationService]
 })
 export class ValidationExampleComponent {
+
+    toBootstrapClassList = toBootstrapClassList;
 
     submitted: string;
     remoteValidations: RemoteValidation[];
@@ -37,10 +40,10 @@ export class ValidationExampleComponent {
         this.remoteValidations = [
             new RemoteValidation(BLACKLIST_CUSTOMER,
                 [this.form.firstName, this.form.lastName],
-                () => this.validationService.validateValidCombination(this.form.firstName.value, this.form.lastName.value)),
+                () => this.validationService.validateValidCombination(this.form.firstName.getValue(), this.form.lastName.getValue())),
             new RemoteValidation(EMAIL_ALREADY_DEFINED,
                 [this.form.email],
-                () => this.validationService.validateUnique(this.form.email.value))
+                () => this.validationService.validateUnique(this.form.email.getValue()))
         ];
     }
 
@@ -54,43 +57,15 @@ export class ValidationExampleComponent {
 
     getJson(): string {
         const form = {
-            firstName: this.form.firstName.value,
-            lastName: this.form.lastName.value,
-            email: this.form.email.value
+            firstName: this.form.firstName.getValue(),
+            lastName: this.form.lastName.getValue(),
+            email: this.form.email.getValue()
         };
         return JSON.stringify(form);
     }
-
-    // private onFirstNameChange(value: string) {
-    //     this.form.firstName.validationResults.registerValidationInProgress(BLACKLIST_CUSTOMER);
-    //     this.form.lastName.validationResults.registerValidationInProgress(BLACKLIST_CUSTOMER);
-    //     this.validationService.validateValidCombination(value, this.form.lastName.value)
-    //         .subscribe(valid => {
-    //             this.form.firstName.validationResults.registerValidationResult(BLACKLIST_CUSTOMER, valid);
-    //             this.form.lastName.validationResults.registerValidationResult(BLACKLIST_CUSTOMER, valid);
-    //         });
-    // }
-    //
-    // private onLastNameChange(value: string) {
-    //     this.form.firstName.validationResults.registerValidationInProgress(BLACKLIST_CUSTOMER);
-    //     this.form.lastName.validationResults.registerValidationInProgress(BLACKLIST_CUSTOMER);
-    //     this.validationService.validateValidCombination(this.form.firstName.value, value)
-    //         .subscribe(valid => {
-    //             this.form.firstName.validationResults.registerValidationResult(BLACKLIST_CUSTOMER, valid);
-    //             this.form.lastName.validationResults.registerValidationResult(BLACKLIST_CUSTOMER, valid);
-    //         });
-    // }
-    //
-    // private onEmailChange(value: string) {
-    //     this.form.email.validationResults.registerValidationInProgress(EMAIL_ALREADY_DEFINED);
-    //     this.validationService.validateUnique(value)
-    //         .subscribe(valid => {
-    //             this.form.email.validationResults.registerValidationResult(EMAIL_ALREADY_DEFINED, valid);
-    //         });
-    // }
 }
 
-function isAllValid(...inputs: ControlledInput<any>[]) {
-    inputs.forEach(i => i.validate(i.value));
-    return inputs.every(i => i.validationResults.isValid());
+function isAllValid(...inputs: FormFieldState<unknown>[]) {
+    inputs.forEach(i => i.registerValueChanged(i.getValue())); // TODO: client side API.
+    return inputs.every(i => i.getValidationResults().isValid());
 }

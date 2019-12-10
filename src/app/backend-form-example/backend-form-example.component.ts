@@ -3,6 +3,7 @@ import {BackendMockService} from './backend-mock.service';
 import {textInput} from '../controlled-input';
 import {Observable} from 'rxjs';
 import {debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators';
+import {toBootstrapClassList} from '../bootstrap-utils';
 
 @Component({
     selector: 'app-backend-form-example',
@@ -11,6 +12,8 @@ import {debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators';
     providers: [BackendMockService]
 })
 export class BackendFormExampleComponent implements OnInit {
+
+    toBootstrapClassList = toBootstrapClassList;
 
     form = {
         firstName: textInput({onValuePublishedSubscribers: [change => this.updateFirstName(change)]}),
@@ -29,9 +32,9 @@ export class BackendFormExampleComponent implements OnInit {
 
     getJson(): string {
         const form = {
-            firstName: this.form.firstName.value,
-            lastName: this.form.lastName.value,
-            street: this.form.street.value
+            firstName: this.form.firstName.getValue(),
+            lastName: this.form.lastName.getValue(),
+            street: this.form.street.getValue()
         };
         return JSON.stringify(form);
     }
@@ -56,18 +59,9 @@ export class BackendFormExampleComponent implements OnInit {
     private fetch() {
         // TODO: this.form.firstName.setValue() would definitely be nicer.
         this.be.getPerson().subscribe(p => {
-            this.form.firstName = textInput({
-                initialValue: p.firstName,
-                onValuePublishedSubscribers: [change => this.updateFirstName(change)]
-            });
-            this.form.lastName = textInput({
-                initialValue: p.lastName,
-                onValuePublishedSubscribers: [change => this.updateLastName(change)]
-            });
-            this.form.street = textInput({
-                initialValue: p.street,
-                onValuePublishedSubscribers: [change => this.updateStreet(change)]
-            });
+            this.form.firstName.setValue(p.firstName);
+            this.form.lastName.setValue(p.lastName);
+            this.form.street.setValue(p.street);
         });
     }
 

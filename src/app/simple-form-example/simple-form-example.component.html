@@ -4,11 +4,11 @@
 		<div class="row">
 			<div class="col-3">
 				<label>First Name</label>
-				<input [efControl]="form.firstName" class="form-control" type="text">
+				<input [ngClass]="toBootstrapClassList(form.menus)" [ufState]="form.firstName" type="text">
 			</div>
 			<div class="col-3">
 				<label>Last Name</label>
-				<input [efControl]="form.lastName" class="form-control" type="text">
+				<input [ngClass]="toBootstrapClassList(form.menus)" [ufState]="form.lastName" type="text">
 			</div>
 			<div class="col-3">
 				<label>Menus</label>
