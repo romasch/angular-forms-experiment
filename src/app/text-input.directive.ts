@@ -2,7 +2,7 @@ import {Directive, ElementRef, HostBinding, HostListener, Input} from '@angular/
 import {ControlledInput} from './controlled-input';
 
 @Directive({
-    selector: 'input [type="text"] [efControl]'
+    selector: 'input [type="text"] [efControl], input [type="email"] [efControl]'
 })
 export class TextInputDirective {
 

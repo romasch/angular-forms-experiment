@@ -25,7 +25,7 @@ export class SimpleFormExampleComponent {
         const form = {
             firstName: this.form.firstName.value,
             lastName: this.form.lastName.value,
-            menus: this.form.menus.value
+            menus: this.form.menus.getValue()
         };
         return JSON.stringify(form);
     }

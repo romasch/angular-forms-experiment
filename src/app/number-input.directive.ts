@@ -1,35 +1,33 @@
 import {Directive, ElementRef, HostBinding, HostListener, Input} from '@angular/core';
-import {ControlledInput} from './controlled-input';
+import {ControlledInput, FormFieldState} from './controlled-input';
 
 @Directive({
-    selector: 'input [type="number"] [efControl]'
+    selector: 'input [type="number"] [state]'
 })
 export class NumberInputDirective {
 
     @HostBinding('class.is-pristine')
-    isPristine = true;
+    isPristine = true; // TODO
 
-    private control: ControlledInput<number>;
-    private isFocused = false;
-    private valueBeforeFocus: number;
+    private _state: FormFieldState<number>;
 
     constructor(private element: ElementRef<HTMLInputElement>) {
     }
 
     @HostBinding('class.is-conflict')
     get isConflict(): boolean {
-        return this.isFocused && !Object.is(this.valueBeforeFocus, this.control.value);
+        return this._state.isConflict();
     }
 
     @HostBinding('class.is-invalid')
     get isInvalid(): boolean {
         // this.element.nativeElement.setCustomValidity(isInvalid ? 'ERROR' : '');
-        return this.control.validationResults.isInvalid();
+        return this._state.getValidationResults().isInvalid();
     }
 
     @HostBinding('class.is-valid')
     get isValid(): boolean {
-        return this.control.validationResults.isValid() && !this.isPristine;
+        return this._state.getValidationResults().isValid() && !this.isPristine;
     }
 
     @HostBinding('class.is-dirty')
@@ -37,75 +35,56 @@ export class NumberInputDirective {
         return !this.isPristine;
     }
 
-    @Input('efControl')
-    set efControl(ctrl: ControlledInput<number>) {
-        if (!this.isFocused) {
-            this.setValue(ctrl.value);
+    @Input('state')
+    set state(state: FormFieldState<number>) {
+        if (this._state) {
+            throw new Error('Cannot change form state after initialization.');
         }
-        this.control = ctrl;
+        state.initialize(v => this.setValue(v));
+        this._state = state;
     }
 
     @HostListener('focus')
-    focus(): void {
-        this.checkConsistency();
-        this.isFocused = true;
-        this.valueBeforeFocus = this.control.value;
+    onFocus(): void {
+        this._state.registerFocus();
+        // this.checkConsistency();
+        // this.isFocused = true;
+        // this.valueBeforeFocus = this.control.value;
     }
 
     @HostListener('blur')
-    blur(): void {
-        this.isFocused = false;
-        this.publishWhenChanged();
-        // TODO: set to controlled value if change happened after publish (stupid tab handling of ngbTypeahead...).
+    onBlur(): void {
+        this._state.registerValueCommitted(this.getValue());
+        this._state.registerBlur();
     }
 
     @HostListener('input')
     onChange() {
-        this.control.validate(this.element.nativeElement.valueAsNumber);
+        this._state.registerValueChanged(this.getValue());
     }
 
     @HostListener('keydown.tab')
-    tab() {
-        // Needs to be caught, because the tab happens before the blur event, and thus it has a potential to
-        // lose focus on the next input element if it is conditionally displayed.
-        this.publishWhenChanged();
+    onTab() {
+        this._state.registerValueCommitted(this.getValue());
     }
 
     @HostListener('keydown.esc')
     escape(): void {
-        this.setValue(this.control.value);
-        this.element.nativeElement.blur();
+        this._state.discardChanges();
+        this.element.nativeElement.blur(); // TODO: really necessary?
     }
 
     @HostListener('keydown.enter')
     enter() {
-        // The enter key can trigger a form submit, so we must publish the new value before.
-        this.publishWhenChanged();
+        this._state.registerValueCommitted(this.getValue());
     }
-
-    private publishWhenChanged() {
-        const currentValue = this.element.nativeElement.valueAsNumber;
-        if (Object.is(currentValue, this.valueBeforeFocus)) {
-            return;
-        }
-        this.control.publish(currentValue, this.valueBeforeFocus, this.control.value);
-        this.valueBeforeFocus = currentValue;
-        this.isPristine = false;
-    }
-
 
     private setValue(value: number) {
         this.element.nativeElement.valueAsNumber = value;
     }
 
-    private checkConsistency(): void {
-        if (!this.isValueConsistent()) {
-            console.warn('Value inconsistency detected: ', this.control.value, this.element.nativeElement.valueAsNumber);
-        }
-    }
-
-    private isValueConsistent(): boolean {
-        return Object.is(this.control.value, this.element.nativeElement.valueAsNumber);
+    private getValue(): number {
+        return this.element.nativeElement.valueAsNumber;
     }
 
 }
