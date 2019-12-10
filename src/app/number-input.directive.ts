@@ -2,7 +2,7 @@ import {Directive, ElementRef, HostListener, Input} from '@angular/core';
 import {FormFieldState} from './controlled-input';
 
 @Directive({
-    selector: 'input [type="number"] [state]'
+    selector: 'input [type="number"] [ufState]'
 })
 export class NumberInputDirective {
 
@@ -11,7 +11,7 @@ export class NumberInputDirective {
     constructor(private element: ElementRef<HTMLInputElement>) {
     }
 
-    @Input('state')
+    @Input('ufState')
     set initialize(state: FormFieldState<number>) {
         if (this._state) {
             throw new Error('Cannot change form state after initialization.');
