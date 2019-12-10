@@ -1,16 +1,15 @@
-import {ValidationState} from './validation/validation-state';
-import {ImmediateValidation} from './validation/immediate-validation';
+import {FormFieldState, ValuePublishedSubscriber} from './form-field-state';
+import {ValidationState} from '../validation/validation-state';
+import {ImmediateValidation} from '../validation/immediate-validation';
 
-export type ValuePublishedSubscriber<T> = (value: T, previousValue: T, latestFormValue: T) => void;
-
-export interface InputOptions<T> {
+export interface InitializationOptions<T> {
     initialValue: T;
     validations: Array<ImmediateValidation<T>>;
     onValuePublishedSubscribers: Array<ValuePublishedSubscriber<T>>;
 }
 
-export function textInput(options: Partial<InputOptions<string>> = {}): FormFieldState<string> {
-    const defaults: InputOptions<string> = {
+export function textInput(options: Partial<InitializationOptions<string>> = {}): FormFieldState<string> {
+    const defaults: InitializationOptions<string> = {
         initialValue: '',
         validations: [],
         onValuePublishedSubscribers: []
@@ -21,8 +20,8 @@ export function textInput(options: Partial<InputOptions<string>> = {}): FormFiel
     return new FormFieldStateImpl(merged);
 }
 
-export function numberInput(options: Partial<InputOptions<number>> = {}): FormFieldState<number> {
-    const defaults: InputOptions<number> = {
+export function numberInput(options: Partial<InitializationOptions<number>> = {}): FormFieldState<number> {
+    const defaults: InitializationOptions<number> = {
         initialValue: NaN,
         validations: [],
         onValuePublishedSubscribers: []
@@ -32,36 +31,6 @@ export function numberInput(options: Partial<InputOptions<number>> = {}): FormFi
 
     return new FormFieldStateImpl(merged);
 }
-
-export interface FormFieldState<T> {
-    // Used by client
-    setValue(value: T): void;
-
-    getValue(): T;
-
-
-    isConflict(): boolean;
-
-    isDirty(): boolean;
-
-    isTouched(): boolean;
-
-    subscribe(fn: ValuePublishedSubscriber<T>): void;
-
-    // Used by both:
-    getValidationState(): ValidationState;
-
-    // Used by directive:
-    initialize(writeValueFunction: (value: T) => void): void;
-
-    discardChanges(): void;
-
-    registerFocus(): void; // focus event, saves previous value
-    registerValueChanged(value: T): void; // trigger immediate validations
-    registerValueCommitted(value: T): void; // commit the value, such that clients read it from getValue() (e.g. blur event, enter or tab pressed).
-    registerBlur(): void; // emit a published value on blur().
-}
-
 
 class FormFieldStateImpl<T> implements FormFieldState<T> {
 
@@ -76,7 +45,7 @@ class FormFieldStateImpl<T> implements FormFieldState<T> {
     private readonly _validationState = new ValidationState();
     private readonly _immediateValidations: Array<ImmediateValidation<T>>;
 
-    constructor(options: InputOptions<T>) {
+    constructor(options: InitializationOptions<T>) {
         this._value = options.initialValue;
         this._immediateValidations = options.validations;
         options.onValuePublishedSubscribers.forEach(fn => this._subscribers.push(fn));

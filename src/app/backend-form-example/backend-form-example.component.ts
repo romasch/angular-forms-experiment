@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {BackendMockService} from './backend-mock.service';
-import {textInput} from '../controlled-input';
 import {Observable} from 'rxjs';
 import {debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators';
 import {toBootstrapClassList} from '../bootstrap-utils';
+import {textInput} from '../form-field-state/form-field-state-factory';
 
 @Component({
     selector: 'app-backend-form-example',

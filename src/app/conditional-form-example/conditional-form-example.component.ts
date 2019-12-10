@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
-import {textInput} from '../controlled-input';
 import {toBootstrapClassList} from '../bootstrap-utils';
+import {textInput} from '../form-field-state/form-field-state-factory';
 
 @Component({
     selector: 'app-conditional-form-example',

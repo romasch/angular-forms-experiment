@@ -1,5 +1,5 @@
 import {Directive, ElementRef, HostListener, Input} from '@angular/core';
-import {FormFieldState} from './controlled-input';
+import {FormFieldState} from './form-field-state/form-field-state';
 
 @Directive({
     selector: 'input [type="number"] [ufState]'

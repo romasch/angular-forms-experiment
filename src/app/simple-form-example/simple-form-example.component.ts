@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
-import {numberInput, textInput} from '../controlled-input';
 import {toBootstrapClassList} from '../bootstrap-utils';
 import {max, min, required} from '../validation/validators';
+import {numberInput, textInput} from '../form-field-state/form-field-state-factory';
 
 @Component({
     selector: 'app-simple-form-example',

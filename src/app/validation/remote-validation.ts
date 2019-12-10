@@ -1,6 +1,6 @@
-import {FormFieldState} from '../controlled-input';
 import {Observable} from 'rxjs';
 import {isUndefined} from 'util';
+import {FormFieldState} from '../form-field-state/form-field-state';
 
 export type RemoteValidator = () => Observable<boolean>;
 export type ReceiveValidationResultFunction = (result: boolean) => void;

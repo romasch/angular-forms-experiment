@@ -1,9 +1,10 @@
 import {Component} from '@angular/core';
-import {FormFieldState, textInput} from '../controlled-input';
 import {ValidationService} from './validation.service';
 import {RemoteValidation} from '../validation/remote-validation';
 import {required, validEmail} from '../validation/validators';
 import {toBootstrapClassList} from '../bootstrap-utils';
+import {FormFieldState} from '../form-field-state/form-field-state';
+import {textInput} from '../form-field-state/form-field-state-factory';
 
 const BLACKLIST_CUSTOMER = 'This customer is blacklisted.';
 const EMAIL_ALREADY_DEFINED = 'Email is already defined in system.';

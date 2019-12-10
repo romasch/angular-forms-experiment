@@ -1,4 +1,4 @@
-import {FormFieldState} from './controlled-input';
+import {FormFieldState} from './form-field-state/form-field-state';
 
 export interface NgClassSet {
     [klass: string]: boolean;
