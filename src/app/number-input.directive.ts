@@ -1,42 +1,18 @@
-import {Directive, ElementRef, HostBinding, HostListener, Input} from '@angular/core';
-import {ControlledInput, FormFieldState} from './controlled-input';
+import {Directive, ElementRef, HostListener, Input} from '@angular/core';
+import {FormFieldState} from './controlled-input';
 
 @Directive({
     selector: 'input [type="number"] [state]'
 })
 export class NumberInputDirective {
 
-    @HostBinding('class.is-pristine')
-    isPristine = true; // TODO
-
     private _state: FormFieldState<number>;
 
     constructor(private element: ElementRef<HTMLInputElement>) {
     }
 
-    @HostBinding('class.is-conflict')
-    get isConflict(): boolean {
-        return this._state.isConflict();
-    }
-
-    @HostBinding('class.is-invalid')
-    get isInvalid(): boolean {
-        // this.element.nativeElement.setCustomValidity(isInvalid ? 'ERROR' : '');
-        return this._state.getValidationResults().isInvalid();
-    }
-
-    @HostBinding('class.is-valid')
-    get isValid(): boolean {
-        return this._state.getValidationResults().isValid() && !this.isPristine;
-    }
-
-    @HostBinding('class.is-dirty')
-    get isDirty(): boolean {
-        return !this.isPristine;
-    }
-
     @Input('state')
-    set state(state: FormFieldState<number>) {
+    set initialize(state: FormFieldState<number>) {
         if (this._state) {
             throw new Error('Cannot change form state after initialization.');
         }
@@ -47,9 +23,6 @@ export class NumberInputDirective {
     @HostListener('focus')
     onFocus(): void {
         this._state.registerFocus();
-        // this.checkConsistency();
-        // this.isFocused = true;
-        // this.valueBeforeFocus = this.control.value;
     }
 
     @HostListener('blur')
@@ -71,7 +44,7 @@ export class NumberInputDirective {
     @HostListener('keydown.esc')
     escape(): void {
         this._state.discardChanges();
-        this.element.nativeElement.blur(); // TODO: really necessary?
+        this.element.nativeElement.blur();
     }
 
     @HostListener('keydown.enter')

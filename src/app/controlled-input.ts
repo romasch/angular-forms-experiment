@@ -96,7 +96,12 @@ export interface FormFieldState<T> {
 
     getValue(): T;
 
+
     isConflict(): boolean;
+
+    isDirty(): boolean;
+
+    isTouched(): boolean;
 
     subscribe(fn: ValuePublishedSubscriber<T>): void;
 
@@ -116,6 +121,9 @@ export interface FormFieldState<T> {
 
 
 class FormFieldStateImpl<T> implements FormFieldState<T> {
+
+    private _dirty: boolean = false;
+    private _touched: boolean = false;
 
     private _isFocused = false;
     private _value: T;
@@ -153,6 +161,14 @@ class FormFieldStateImpl<T> implements FormFieldState<T> {
         return this._conflictingValue !== undefined;
     }
 
+    isDirty(): boolean {
+        return this._dirty;
+    }
+
+    isTouched(): boolean {
+        return this._touched;
+    }
+
     subscribe(fn: ValuePublishedSubscriber<T>): void {
         this._subscribers.push(fn);
     }
@@ -181,6 +197,7 @@ class FormFieldStateImpl<T> implements FormFieldState<T> {
     }
 
     registerValueChanged(value: T): void {
+        this._touched = true;
         this._immediateValidations.forEach(validation => this.getValidationResults()
             .registerValidationResult(validation.key, validation.validate(value)));
     }
@@ -193,6 +210,7 @@ class FormFieldStateImpl<T> implements FormFieldState<T> {
     registerBlur(): void {
         if (!Object.is(this._value, this._valueBeforeFocus)) {
             this._subscribers.forEach(fn => fn(this._value, this._valueBeforeFocus, this._conflictingValue));
+            this._dirty = true;
         }
         this._valueBeforeFocus = undefined;
         this._conflictingValue = undefined;

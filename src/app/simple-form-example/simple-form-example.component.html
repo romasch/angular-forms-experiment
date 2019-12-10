@@ -12,7 +12,7 @@
 			</div>
 			<div class="col-3">
 				<label>Menus</label>
-				<input [state]="form.menus" class="form-control" type="number">
+				<input [ngClass]="toBootstrapClassList(form.menus)" [state]="form.menus" type="number">
 			</div>
 			<div class="col-2">
 				<button class="btn btn-secondary mt-4">Submit</button>

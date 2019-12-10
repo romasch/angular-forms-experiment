@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {numberInput, required, textInput} from '../controlled-input';
+import {toBootstrapClassList} from '../bootstrap-utils';
 
 @Component({
     selector: 'app-simple-form-example',
@@ -7,6 +8,8 @@ import {numberInput, required, textInput} from '../controlled-input';
     styleUrls: ['./simple-form-example.component.scss']
 })
 export class SimpleFormExampleComponent {
+
+    toBootstrapClassList = toBootstrapClassList;
 
     form = {
         firstName: textInput({validations: [required]}),
