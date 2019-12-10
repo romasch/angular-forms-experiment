@@ -1,8 +1,8 @@
-import {FormFieldState} from './controlled-input';
+import {FormFieldState} from '../controlled-input';
 import {Observable} from 'rxjs';
 import {isUndefined} from 'util';
 
-export type ValidateRemotelyFunction = () => Observable<boolean>;
+export type RemoteValidator = () => Observable<boolean>;
 export type ReceiveValidationResultFunction = (result: boolean) => void;
 
 export class RemoteValidation {
@@ -10,7 +10,7 @@ export class RemoteValidation {
     constructor(
         private readonly key: string,
         private readonly formFields: Array<FormFieldState<unknown>>,
-        private readonly remoteValidationFunction: ValidateRemotelyFunction,
+        private readonly remoteValidationFunction: RemoteValidator,
         private readonly onResultReceived?: ReceiveValidationResultFunction
     ) {
         if (isUndefined(onResultReceived)) {
@@ -21,11 +21,11 @@ export class RemoteValidation {
     }
 
     validate() {
-        this.formFields.forEach(field => field.getValidationResults().registerValidationInProgress(this.key));
+        this.formFields.forEach(field => field.getValidationState().registerValidationInProgress(this.key));
         this.remoteValidationFunction().subscribe(this.onResultReceived);
     }
 
     private defaultSetResult(value: boolean) {
-        this.formFields.forEach(field => field.getValidationResults().registerValidationResult(this.key, value));
+        this.formFields.forEach(field => field.getValidationState().registerValidationResult(this.key, value));
     }
 }

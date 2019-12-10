@@ -5,17 +5,17 @@
 			<div class="col-3">
 				<label>First Name</label>
 				<input [ngClass]="toBootstrapClassList(form.firstName)" [ufState]="form.firstName" class="form-control" type="text" name="fname">
-				<div *ngFor="let error of form.firstName.getValidationResults().getValidationErrors()" class="invalid-feedback d-block">{{error}}</div>
+				<div *ngFor="let error of form.firstName.getValidationState().getValidationErrors()" class="invalid-feedback d-block">{{error}}</div>
 			</div>
 			<div class="col-3">
 				<label>Last Name</label>
 				<input [ngClass]="toBootstrapClassList(form.lastName)" [ufState]="form.lastName" class="form-control" type="text" name="lname">
-				<div *ngFor="let error of form.lastName.getValidationResults().getValidationErrors()" class="invalid-feedback d-block">{{error}}</div>
+				<div *ngFor="let error of form.lastName.getValidationState().getValidationErrors()" class="invalid-feedback d-block">{{error}}</div>
 			</div>
 			<div class="col-3">
 				<label>Email</label>
 				<input [ngClass]="toBootstrapClassList(form.email)" [ufState]="form.email" class="form-control" type="email" name="email">
-				<div *ngFor="let error of form.email.getValidationResults().getValidationErrors()" class="invalid-feedback d-block">{{error}}</div>
+				<div *ngFor="let error of form.email.getValidationState().getValidationErrors()" class="invalid-feedback d-block">{{error}}</div>
 			</div>
 			<div class="col-3">
 				<label>Email</label>

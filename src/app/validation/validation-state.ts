@@ -1,6 +1,6 @@
 type ValidationResult = boolean | null;
 
-export class ValidationResults {
+export class ValidationState {
 
     private readonly results: Map<string, ValidationResult> = new Map<string, ValidationResult>();
 

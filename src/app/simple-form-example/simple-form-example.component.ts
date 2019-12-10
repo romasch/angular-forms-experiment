@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
-import {numberInput, required, textInput} from '../controlled-input';
+import {numberInput, textInput} from '../controlled-input';
 import {toBootstrapClassList} from '../bootstrap-utils';
+import {max, min, required} from '../validation/validators';
 
 @Component({
     selector: 'app-simple-form-example',
@@ -12,9 +13,9 @@ export class SimpleFormExampleComponent {
     toBootstrapClassList = toBootstrapClassList;
 
     form = {
-        firstName: textInput({validations: [required]}),
+        firstName: textInput({validations: [required()]}),
         lastName: textInput(),
-        menus: numberInput({validations: [required]}),
+        menus: numberInput({validations: [required(), min(1), max(100)]}),
     };
 
     submitted: string;

@@ -1,7 +1,8 @@
 import {Component} from '@angular/core';
-import {FormFieldState, ImmediateValidation, textInput} from '../controlled-input';
+import {FormFieldState, textInput} from '../controlled-input';
 import {ValidationService} from './validation.service';
-import {RemoteValidation} from '../remote-validation';
+import {RemoteValidation} from '../validation/remote-validation';
+import {required, validEmail} from '../validation/validators';
 import {toBootstrapClassList} from '../bootstrap-utils';
 
 const BLACKLIST_CUSTOMER = 'This customer is blacklisted.';
@@ -19,20 +20,18 @@ export class ValidationExampleComponent {
 
     submitted: string;
     remoteValidations: RemoteValidation[];
-    private readonly required = new ImmediateValidation<string>('This value is required.', val => this.validationService.validateRequired(val));
-    private readonly validEmail = new ImmediateValidation<string>('Must be a valid email', val => this.validationService.validateEmail(val));
-
     form = {
-        firstName: textInput({
-            // onValuePublishedSubscribers: [value => this.onFirstNameChange(value)],
-        }),
+        firstName: textInput(),
         lastName: textInput({
-            // onValuePublishedSubscribers: [value => this.onLastNameChange(value)],
-            validations: [this.required]
+            validations: [
+                required().withKey('Last name must be provided!')
+            ]
         }),
         email: textInput({
-            // onValuePublishedSubscribers: [value => this.onEmailChange(value)],
-            validations: [this.required, this.validEmail]
+            validations: [
+                required().withKey('Email must be provided!'),
+                validEmail().withKey('This email is not valid!')
+            ]
         })
     };
 
@@ -67,5 +66,5 @@ export class ValidationExampleComponent {
 
 function isAllValid(...inputs: FormFieldState<unknown>[]) {
     inputs.forEach(i => i.registerValueChanged(i.getValue())); // TODO: client side API.
-    return inputs.every(i => i.getValidationResults().isValid());
+    return inputs.every(i => i.getValidationState().isValid());
 }

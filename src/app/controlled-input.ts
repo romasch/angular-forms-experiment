@@ -1,17 +1,7 @@
-import {ValidationResults} from './validation-results';
+import {ValidationState} from './validation/validation-state';
+import {ImmediateValidation} from './validation/immediate-validation';
 
 export type ValuePublishedSubscriber<T> = (value: T, previousValue: T, latestFormValue: T) => void;
-
-export type ImmediateValidationFunction<T> = (t: T) => boolean;
-
-export class ImmediateValidation<T> {
-    constructor(readonly key: string, readonly validate: ImmediateValidationFunction<T>) {
-    }
-}
-
-// const isNotEmpty: ImmediateValidationFunction<any> = value => !isNullOrUndefined(value) && value !== '';
-const isNotEmpty: ImmediateValidationFunction<any> = value => !!value;
-export const required: ImmediateValidation<any> = new ImmediateValidation('ef.required', isNotEmpty);
 
 export interface InputOptions<T> {
     initialValue: T;
@@ -59,7 +49,7 @@ export interface FormFieldState<T> {
     subscribe(fn: ValuePublishedSubscriber<T>): void;
 
     // Used by both:
-    getValidationResults(): ValidationResults;
+    getValidationState(): ValidationState;
 
     // Used by directive:
     initialize(writeValueFunction: (value: T) => void): void;
@@ -83,7 +73,7 @@ class FormFieldStateImpl<T> implements FormFieldState<T> {
     private _valueBeforeFocus: T;
     private _conflictingValue: T | undefined;
     private readonly _subscribers: Array<ValuePublishedSubscriber<T>> = [];
-    private readonly _validationResults = new ValidationResults();
+    private readonly _validationState = new ValidationState();
     private readonly _immediateValidations: Array<ImmediateValidation<T>>;
 
     constructor(options: InputOptions<T>) {
@@ -127,8 +117,8 @@ class FormFieldStateImpl<T> implements FormFieldState<T> {
     }
 
     // Used by both:
-    getValidationResults(): ValidationResults {
-        return this._validationResults;
+    getValidationState(): ValidationState {
+        return this._validationState;
     }
 
     // Used by directive:
@@ -151,7 +141,7 @@ class FormFieldStateImpl<T> implements FormFieldState<T> {
 
     registerValueChanged(value: T): void {
         this._touched = true;
-        this._immediateValidations.forEach(validation => this.getValidationResults()
+        this._immediateValidations.forEach(validation => this.getValidationState()
             .registerValidationResult(validation.key, validation.validate(value)));
     }
 
