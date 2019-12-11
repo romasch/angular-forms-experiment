@@ -45,6 +45,7 @@ class FormFieldStateImpl<T> implements FormFieldState<T> {
         this._value = options.initialValue;
         this._immediateValidations = options.validations;
         options.onValuePublishedSubscribers.forEach(fn => this._subscribers.push(fn));
+        this.triggerValidations(this._value);
     }
 
     /**
@@ -58,6 +59,7 @@ class FormFieldStateImpl<T> implements FormFieldState<T> {
         } else {
             this._value = value;
             this._writeValue(value);
+            this.triggerValidations(value);
         }
     }
 
@@ -106,6 +108,10 @@ class FormFieldStateImpl<T> implements FormFieldState<T> {
 
     registerValueChanged(value: T): void {
         this._touched = true;
+        this.triggerValidations(value);
+    }
+
+    private triggerValidations(value: T) {
         this._immediateValidations.forEach(validation => this.getValidationState()
             .registerValidationResult(validation.key, validation.validate(value)));
     }

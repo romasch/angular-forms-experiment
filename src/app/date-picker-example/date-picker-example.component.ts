@@ -1,8 +1,8 @@
 import {Component} from '@angular/core';
-import {FormFieldState} from '../form-field-state/form-field-state';
 import {LocalDate} from '@js-joda/core';
 import {dateField} from '../date-picker/date-picker.component';
 import {ImmediateValidation} from '../validation/immediate-validation';
+import {required} from '../validation/validators';
 
 @Component({
     selector: 'app-date-picker-example',
@@ -11,7 +11,18 @@ import {ImmediateValidation} from '../validation/immediate-validation';
 })
 export class DatePickerExampleComponent {
 
-    date: FormFieldState<LocalDate> = dateField({validations: [new ImmediateValidation<LocalDate>('future.date', d => d.isAfter(LocalDate.now()))]});
+    submitted: LocalDate;
+
+    date = dateField({
+        initialValue: LocalDate.now(),
+        validations: [
+            required(),
+            new ImmediateValidation<LocalDate>('future.date', d => d && d.isAfter(LocalDate.now()))]
+    });
 
 
+    onSubmit() {
+        this.submitted = this.date.getValue();
+        return false;
+    }
 }
