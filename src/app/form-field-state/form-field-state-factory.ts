@@ -9,27 +9,23 @@ export interface InitializationOptions<T> {
 }
 
 export function textInput(options: Partial<InitializationOptions<string>> = {}): FormFieldState<string> {
-    const defaults: InitializationOptions<string> = {
-        initialValue: '',
-        validations: [],
-        onValuePublishedSubscribers: []
-    };
-
-    const merged = Object.assign(defaults, options);
-
-    return new FormFieldStateImpl(merged);
+    return createNewFactoryMethod<string>('')(options);
 }
 
 export function numberInput(options: Partial<InitializationOptions<number>> = {}): FormFieldState<number> {
-    const defaults: InitializationOptions<number> = {
-        initialValue: NaN,
-        validations: [],
-        onValuePublishedSubscribers: []
+    return createNewFactoryMethod<number>(NaN)(options);
+}
+
+export function createNewFactoryMethod<T>(initialInput: T): (options: Partial<InitializationOptions<T>>) => FormFieldState<T> {
+    return options => {
+        const defaults: InitializationOptions<T> = {
+            initialValue: initialInput,
+            validations: [],
+            onValuePublishedSubscribers: []
+        };
+        const merged = Object.assign(defaults, options);
+        return new FormFieldStateImpl(merged);
     };
-
-    const merged = Object.assign(defaults, options);
-
-    return new FormFieldStateImpl(merged);
 }
 
 class FormFieldStateImpl<T> implements FormFieldState<T> {

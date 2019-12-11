@@ -8,7 +8,9 @@ import {SimpleFormExampleComponent} from './simple-form-example/simple-form-exam
 import {ConditionalFormExampleComponent} from './conditional-form-example/conditional-form-example.component';
 import {BackendFormExampleComponent} from './backend-form-example/backend-form-example.component';
 import {ValidationExampleComponent} from './validation-example/validation-example.component';
-import {NgbTypeaheadModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDatepickerModule, NgbTypeaheadModule} from '@ng-bootstrap/ng-bootstrap';
+import {DatePickerComponent} from './date-picker/date-picker.component';
+import {DatePickerExampleComponent} from './date-picker-example/date-picker-example.component';
 
 @NgModule({
     declarations: [
@@ -18,10 +20,12 @@ import {NgbTypeaheadModule} from '@ng-bootstrap/ng-bootstrap';
         SimpleFormExampleComponent,
         ConditionalFormExampleComponent,
         BackendFormExampleComponent,
-        ValidationExampleComponent
+        ValidationExampleComponent,
+        DatePickerComponent,
+        DatePickerExampleComponent
     ],
     imports: [
-        BrowserModule, NgbTypeaheadModule
+        BrowserModule, NgbTypeaheadModule, NgbDatepickerModule
     ],
     providers: [],
     bootstrap: [AppComponent]

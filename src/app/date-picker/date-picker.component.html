@@ -1,0 +1,8 @@
+<div class="input-group">
+	<input #calendar='ngbDatepicker' class="form-control" ngbDatepicker [ufState]="text" type="text" [ngClass]="getClass()" (dateSelect)="forwardDateSelected($event)">
+	<div class="input-group-append">
+		<button (click)="calendar.toggle()" class="btn btn-secondary" type="button">
+			C
+		</button>
+	</div>
+</div>
