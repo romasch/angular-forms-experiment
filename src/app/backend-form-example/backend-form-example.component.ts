@@ -53,11 +53,11 @@ export class BackendFormExampleComponent implements OnInit {
     }
 
     private updateStreet(name: string) {
+        console.log('Street updated: ' + name);
         this.be.updateStreet(name).subscribe(() => this.fetch());
     }
 
     private fetch() {
-        // TODO: this.form.firstName.setValue() would definitely be nicer.
         this.be.getPerson().subscribe(p => {
             this.form.firstName.setValue(p.firstName);
             this.form.lastName.setValue(p.lastName);
